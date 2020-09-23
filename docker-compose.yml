@@ -1,14 +1,35 @@
 version: '3'
 services:
-  db:
+  profile:
     image: postgres:12
-    container_name: postgres
+    container_name: profile
     ports:
-      - 5432:5432
+      - 9012:5432
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: docker_test
-    restart: always 
+    restart: always
+  profile_backup:
+    image: postgres:12
+    container_name: profile_backup
+    ports:
+    - 9013:5432
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: docker_test
+    restart: always
+  wiremock:
+    build: ./wiremock
+    command: --port 8087
+    container_name: wiremock
+    ports:
+      - 8087:8087
+    volumes:
+      - ./wiremock/stub:/home/wiremock
+    restart: always
